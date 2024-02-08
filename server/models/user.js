@@ -7,7 +7,7 @@ const userSchema = new mongoose.Schema({
     shortUrls: [
         {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'ShortURL'
+            ref: 'ShortURLStore'
         }
     ]
 })

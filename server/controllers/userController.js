@@ -13,7 +13,7 @@ module.exports.signup = asyncHandler(async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 12); // second argument is salt
         const newUser = await User.create({ email, name, password: hashedPassword, location });
         const token = jwt.sign({ email: newUser.email, id: newUser._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
-        res.status(200).json({ result: { name: newUser.name, location: newUser.location, email: newUser.email, profilePic: newUser.profilePic, verified: newUser.isVerified }, token });
+        res.status(200).json({ curr: { name: newUser.name, email: newUser.email }, token });
     } catch (error) {
         res.status(500).json("Something went wrong...");
     }
@@ -33,9 +33,10 @@ module.exports.login = async (req, res) => {
         }
 
         const token = jwt.sign({ email: existingUser.email, id: existingUser._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
-        res.status(200).json({ result: { name: existingUser.name, location: existingUser.location, email: existingUser.email, profilePic: existingUser.profilePic, verified: existingUser.isVerified }, token });
+        res.status(200).json({ curr: { name: existingUser.name, email: existingUser.email }, token });
 
     } catch (error) {
+        console.log(error)
         res.status(500).json("Something went wrong...");
     }
 };

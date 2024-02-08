@@ -10,37 +10,37 @@ module.exports.createShortUrl = asyncHandler(async (req, res) => {
     const { _id } = req.user;
     try {
         if (!validUrl.isUri(originalUrl)) {
-            return res.status(401).json({ error: "Invalid Url" });
+            return res.status(401).json({ message: "Invalid Url" });
         }
 
         if (uniqueName) {
             const existingName = await ShortURLStore.findOne({ short: uniqueName });
             if (existingName) {
-                return res.status(400).json({ error: `Unique Name ${uniqueName} already in use. Please choose a different name.` });
+                return res.status(400).json({ message: `Unique Name ${uniqueName} already in use. Please choose a different name.` });
             }
         }
 
         const existingShortUrl = await ShortURLStore.findOne({ fullUrl: originalUrl });
         if (existingShortUrl && !uniqueName) {
-            return res.json({ uniqueName: existingShortUrl.short });
+            return res.status(404).json({ message: 'URL already exist\'s' });
         }
 
         let generatedName;
         if (!uniqueName) {
-            generatedName = generateUniqueName();
+            generatedName =await generateUniqueName();
         }
         else {
             generatedName = uniqueName;
         }
-        const shortUrl = `${baseURL}/${generatedName}`;
+        const shortUrl = `${baseURL}/short/${generatedName}`;
         const newUrl = await ShortURLStore.create({
             short: generatedName,
             shortUrl,
             fullUrl: originalUrl
         });
+        await newUrl.save();
         await User.findByIdAndUpdate(_id, { $push: { shortUrls: newUrl._id } });
-        res.status(200).json("New URL created successfully");
-        
+        res.status(200).json(newUrl);
     } catch (error) {
         console.log(error);
         res.status(500).json("Something went wrong...");
@@ -56,7 +56,7 @@ module.exports.referUrl = asyncHandler(async (req, res) => {
             await url.save();
             return res.redirect(url.longUrl);
         } else {
-            return res.status(404).json('No URL Found');
+            return res.status(404).json({message:'No URL Found'});
         }
     } catch (error) {
         console.log(error);
@@ -64,13 +64,13 @@ module.exports.referUrl = asyncHandler(async (req, res) => {
     }
 });
 
-module.exports.getAllUrls = asyncHandler(async(req,res)=>{
-    const {_id} = req.user;
-    try{
+module.exports.getAllUrls = asyncHandler(async (req, res) => {
+    const { _id } = req.user;
+    try {
         const user = await User.findById(_id).populate('shortUrls');
         res.status(200).json(user.shortUrls);
-    }catch(error){
+    } catch (error) {
         console.log(error);
-        res.status(500).json("Something went wrong...");   
+        res.status(500).json("Something went wrong...");
     }
 })

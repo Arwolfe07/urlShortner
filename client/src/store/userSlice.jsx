@@ -12,8 +12,11 @@ const userSlice = createSlice({
       localStorage.clear();
       return null;
     },
+    setCurrentUser: (state, action) => {
+        return action.payload;
+      },
   },
 });
 
-export const {authorizeUser, logoutUser} = userSlice.actions;
+export const {authorizeUser, logoutUser, setCurrentUser} = userSlice.actions;
 export default userSlice.reducer;
