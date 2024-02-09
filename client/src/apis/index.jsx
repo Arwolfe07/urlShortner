@@ -1,7 +1,7 @@
 import axios from "axios";
 
-const URL = "http://localhost:5000";
-//   process.env.NODE_ENV === "production" ? "" : "http://localhost:5000";
+// const URL = "http://localhost:5000";
+  process.env.NODE_ENV === "production" ? "https://short-pfy7.onrender.com" : "http://localhost:5000";
 
 const API = axios.create({ baseURL: URL });
 
