@@ -19,6 +19,7 @@ const router = createBrowserRouter([
   {
     path: "/main",
     element: <RootLayout />,
+    errorElement: <Error />,
     children: [
       {
         index: true,
@@ -29,6 +30,7 @@ const router = createBrowserRouter([
   {
     path: "/short/:urlname",
     element: <Redirect />,
+    errorElement: <Error />,
   },
 ]);
 

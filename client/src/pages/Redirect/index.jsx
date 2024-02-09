@@ -5,6 +5,7 @@ const Redirect = () => {
   const { urlname } = useParams();
   const serverUrl = import.meta.env.VITE_APP_SERVER_URL;
   const redirect = () => {
+    console.log(urlname);
     let url = serverUrl + `/url/redirect/${urlname}`;
     window.location.replace(url);
   };
