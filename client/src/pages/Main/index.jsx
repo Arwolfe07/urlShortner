@@ -23,11 +23,6 @@ const Main = () => {
     if (!longUrl.current.value) {
       return enqueueSnackbar("Please add a URL", { variant: "error" });
     }
-    if (code.current.value > 8) {
-      return enqueueSnackbar("The short url cannot be more than 8 characters", {
-        variant: "error",
-      });
-    }
     dispatch(setLoad(true));
     dispatch(
       createUrl({
