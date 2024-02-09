@@ -8,6 +8,7 @@ import RootLayout from "./components/RootLayout";
 import Auth from "./pages/Auth";
 import Redirect from "./pages/Redirect";
 import Main from "./pages/Main";
+import Error from "./pages/Error";
 
 const router = createBrowserRouter([
   {
@@ -17,6 +18,7 @@ const router = createBrowserRouter([
   {
     path: "/main",
     element: <RootLayout />,
+    errorElement: <Error />,
     children: [
       {
         index: true,
