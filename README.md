@@ -3,6 +3,10 @@
 ## Description
 This is a simple URL Shortner app built using React.js and Redux toolkit for state management, with Node.js, Express.js and MongoDB for backend. It allows user to make short URLs out of long ones and use them instead.
 
+<img src="https://github.com/Arwolfe07/urlShortner/blob/master/screenshots/sm0.png" alt="Img" width="100%"></img>
+<img src="https://github.com/Arwolfe07/urlShortner/blob/master/screenshots/sm1.png" alt="Img" width="100%"></img>
+
+
 ## Features
 * Authentication:
     * Using JWT token authentication, the user will create a new account using email and password to get access to protected routes. 
