@@ -15,7 +15,7 @@ import { setCurrentUser } from "../../store/userSlice";
 
 const Auth = () => {
   const [isSignUp, setIsSignUp] = useState(false);
-  const user = useSelector((store) => store.user);
+  // const user = useSelector((store) => store.user);
   const email = useRef();
   const name = useRef();
   const password = useRef();

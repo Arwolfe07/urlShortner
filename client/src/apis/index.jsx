@@ -19,3 +19,4 @@ export const login = (authData) => API.post("/user/login", authData);
 
 export const createUrl = (urlData) => API.post("/url/create", urlData);
 export const getAllUrls = () => API.get("/url/all");
+export const deleteUrl = (urlId) => API.delete(`/url/delete/${urlId}`);

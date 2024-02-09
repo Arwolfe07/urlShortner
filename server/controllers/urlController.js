@@ -54,7 +54,7 @@ module.exports.referUrl = asyncHandler(async (req, res) => {
         if (url) {
             url.clicks += 1;
             await url.save();
-            return res.redirect(url.longUrl);
+            return res.redirect(url.fullUrl);
         } else {
             return res.status(404).json({message:'No URL Found'});
         }
@@ -69,6 +69,26 @@ module.exports.getAllUrls = asyncHandler(async (req, res) => {
     try {
         const user = await User.findById(_id).populate('shortUrls');
         res.status(200).json(user.shortUrls);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json("Something went wrong...");
+    }
+});
+
+module.exports.deleteUrl = asyncHandler(async (req, res) => {
+    const {urlId} = req.params;
+    const { _id: userId } = req.user;
+    try {
+        const urlToDelete = await ShortURLStore.findById(urlId);
+        if (!urlToDelete) {
+            return res.status(404).json({ message: "URL not found" });
+        }
+        if (!urlToDelete) {
+            return res.status(404).json({ message: "URL not found" });
+        }
+        await User.findByIdAndUpdate(userId, { $pull: { shortUrls: urlId } });
+        await ShortURLStore.findByIdAndDelete(urlId);
+        res.status(200).json({ message: "URL deleted successfully" });
     } catch (error) {
         console.log(error);
         res.status(500).json("Something went wrong...");

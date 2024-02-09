@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import logo from "../../assets/logo.png";
+import { animated, useSpring } from "@react-spring/web";
 import { useDispatch, useSelector } from "react-redux";
 import { logoutUser, setCurrentUser } from "../../store/userSlice";
 import { jwtDecode } from "jwt-decode";
@@ -9,6 +10,22 @@ const Navbar = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const user = useSelector((store) => store.user);
+
+  const nav_animation = useSpring({
+    from: {
+      y: -100,
+      opacity: 0,
+    },
+    to: {
+      y: 0,
+      opacity: 1,
+    },
+    config: {
+      duration: 400,
+    },
+  });
+  
+
   const logoutHandler = () => {
     dispatch(logoutUser());
     navigate("/",{replace:true});
@@ -30,8 +47,8 @@ const Navbar = () => {
     }
   }, []);
   return (
-    <div className="fixed text-fontcolor border-b-2 z-30 w-screen max-w-screen gradient-overlay-header py-2 sm:py-4 px-2 sm:px-10 lg:px-24 flex justify-between items-center justify-center">
-      <Link className="flex items-center">
+    <animated.nav style={nav_animation} className="fixed text-fontcolor border-b-2 z-30 w-screen max-w-screen gradient-overlay-header py-2 sm:py-4 px-2 sm:px-10 lg:px-24 flex justify-between items-center justify-center">
+      <Link className="flex items-center" to="/main">
         <img src={logo} className="w-8 h-8 mr-2" />
         <p className="relative text-lg md:text-3xl sm:text-2xl font-extrabold tracking-tighter cursor-pointer">
           <span className="text-primary">Short</span>Monkey
@@ -47,7 +64,7 @@ const Navbar = () => {
           </button>
         </div>
       </div>
-    </div>
+    </animated.nav>
   );
 };
 

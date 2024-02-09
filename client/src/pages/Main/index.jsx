@@ -1,9 +1,13 @@
 import React, { useEffect, useRef } from "react";
-import { animated } from "@react-spring/web";
+import { animated, useSpring } from "@react-spring/web";
 import { useDispatch, useSelector } from "react-redux";
 import { enqueueSnackbar } from "notistack";
 import { setLoad } from "../../store/loadSlice";
-import { createUrl, getAllUrls } from "../../actions/urlActions";
+import { createUrl, deleteUrl, getAllUrls } from "../../actions/urlActions";
+import copy from "copy-to-clipboard";
+import clip from "../../assets/clip.webp";
+
+import del from "../../assets/del.svg";
 
 const Main = () => {
   const load = useSelector((store) => store.loading);
@@ -11,11 +15,18 @@ const Main = () => {
   const longUrl = useRef();
   const code = useRef();
   const dispatch = useDispatch();
-
   const submitHandler = (e) => {
     e.preventDefault();
+    if (urls.length >= 10) {
+      return enqueueSnackbar("Max limit reached. Please delete some URLs.");
+    }
     if (!longUrl.current.value) {
       return enqueueSnackbar("Please add a URL", { variant: "error" });
+    }
+    if (code.current.value > 8) {
+      return enqueueSnackbar("The short url cannot be more than 8 characters", {
+        variant: "error",
+      });
     }
     dispatch(setLoad(true));
     dispatch(
@@ -27,12 +38,51 @@ const Main = () => {
     code.current.value = "";
     longUrl.current.value = "";
   };
-  useEffect(()=>{
+  useEffect(() => {
     dispatch(getAllUrls());
-  },[])
+  }, []);
+
+  const copyHandler = (item) => {
+    copy(item);
+    enqueueSnackbar(`Copied ${item} to clipboard`, { variant: "success" });
+  };
+  const deleteHandler = (id) => {
+    dispatch(setLoad(true));
+    dispatch(deleteUrl(id));
+  };
+  const left = useSpring({
+    from: {
+      y: 100,
+      opacity: 0,
+    },
+    to: {
+      y: 0,
+      opacity: 1,
+    },
+    delay: 1500,
+    config: {
+      tension: 210,
+      friction: 30,
+    },
+  });
+  const right = useSpring({
+    from: {
+      y: -100,
+      opacity: 0,
+    },
+    to: {
+      y: 0,
+      opacity: 1,
+    },
+    delay: 1500,
+    config: {
+      tension: 210,
+      friction: 30,
+    },
+  })
   return (
     <div className="h-screen w-screen py-20 flex flex-col xl:flex-row items-center">
-      <div className="lg:w-1/2 h-full flex justify-center items-center">
+      <animated.div style={left} className="lg:w-1/2 h-full flex justify-center items-center">
         <form className="bg-white xl:shadow-lg rounded-md lg:mx-12 px-8 pt-6 pb-8 mt-4">
           <h1 className="text-fontcolor text-3xl font-extrabold text-center mb-4">
             Shorten URLs
@@ -104,14 +154,15 @@ const Main = () => {
             )}
           </button>
         </form>
-      </div>
-      <div className="xl:w-1/2 sm:w-3/4 w-5/6 h-full xl:mr-8 rounded-md">
+      </animated.div>
+      <animated.div style={right} className="xl:w-1/2 sm:w-3/4 w-5/6 h-full xl:mr-8 rounded-md text-md">
         <h1 className="text-center text-xl p-2 tracking-tighter font-extrabold text-fontcolor">
           Your URLs (max. 10){" "}
         </h1>
         <div className="border-2 border-primary rounded-t-md py-2 w-full flex justify-between px-4 text-md bg-primary font-bold text-white">
-          <span>Original URL</span>
+          <span className="w-1/2">Original URL</span>
           <span>Short URL</span>
+          <span>Action</span>
         </div>
         <div className="w-full  border-2 border-t-0 rounded-b-md">
           {urls?.length == 0 ? (
@@ -121,15 +172,40 @@ const Main = () => {
           ) : (
             <>
               {urls?.map((url) => (
-                <div className="w-full border-b-2 px-4 flex justify-between text-sm py-2" key={url._id}>
-                  <span className="w-1/2 overflow-hidden text-ellipsis">{url.fullUrl}</span>
-                  <a href={url.shortUrl} target="_blank">{url.short}</a>
+                <div
+                  className="w-full border-b-2 px-4 flex justify-between text-sm py-2"
+                  key={url._id}
+                >
+                  <span className="w-1/2 overflow-hidden text-ellipsis">
+                    {url.fullUrl}
+                  </span>
+                  <a
+                    href={url.shortUrl}
+                    target="_blank"
+                    className="w-fit text-primary"
+                  >
+                    {url.short}
+                  </a>
+                  <div className="w-6 h-6 flex mr-6">
+                    <img
+                      src={clip}
+                      className="w-6 h-6 mr-2 cursor-pointer"
+                      alt="img"
+                      onClick={() => copyHandler(url.shortUrl)}
+                    />
+                    <img
+                      src={del}
+                      alt="delete"
+                      className="w-6-h-6 mr-4 cursor-pointer"
+                      onClick={() => deleteHandler(url._id)}
+                    />
+                  </div>
                 </div>
               ))}
             </>
           )}
         </div>
-      </div>
+      </animated.div>
     </div>
   );
 };
